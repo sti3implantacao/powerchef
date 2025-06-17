@@ -76,6 +76,10 @@
       .form-select {
         margin-bottom: 1rem;
       }
+
+      .logo {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -336,7 +340,7 @@
   <!-- Script: Ícones e Filtros -->
   <script>
     $(document).ready(function () {
-      // Alternância de ícones
+      // Ícones do accordion
       $('.accordion .accordion-button').on('click', function () {
         const icon = $(this).find('.icon');
         const isCollapsed = $(this).hasClass('collapsed');
@@ -352,27 +356,49 @@
         $(this).prev().find('.icon').removeClass('fa-plus').addClass('fa-minus');
       });
 
-      // Filtro com expansão automática, mensagem e reset de categoria
+      // Filtro por categoria e busca
       const searchInput = document.getElementById('searchInput');
       const categorySelect = document.getElementById('categorySelect');
       const accordionItems = document.querySelectorAll('.accordion-item');
       const noResultsMessage = document.getElementById('noResultsMessage');
 
+      // Atribuir data-category manualmente às seções
+      const categoryMap = [
+        "cadastro", "caixa", "vendas", "mobile", "estoque", "promocoes",
+        "formacao", "contas", "ifood", "relatorios"
+      ];
+      accordionItems.forEach((item, i) => {
+        item.setAttribute("data-category", categoryMap[i] || "");
+      });
+
       function filterContent() {
         const searchText = searchInput.value.toLowerCase().trim();
-
-        // Resetar categoria automaticamente se busca estiver vazia
-        if (searchText === '') {
-          categorySelect.value = '';
-        }
-
         const selectedCategory = categorySelect.value;
         let resultsFound = false;
 
+        if (searchText === '') {
+          // Mostrar apenas itens da categoria selecionada, ou todos se estiver vazio
+          accordionItems.forEach(item => {
+            const collapseElement = item.querySelector('.accordion-collapse');
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseElement, { toggle: false });
+            const itemCategory = item.getAttribute("data-category");
+
+            if (selectedCategory === '' || selectedCategory === itemCategory) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+            bsCollapse.hide();
+          });
+          noResultsMessage.style.display = 'none';
+          return;
+        }
+
+        // Filtro normal com base em busca e categoria
         accordionItems.forEach(item => {
           const collapseElement = item.querySelector('.accordion-collapse');
           const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseElement, { toggle: false });
-          const categoryId = collapseElement ? collapseElement.classList[1] : '';
+          const itemCategory = item.getAttribute("data-category");
           const button = item.querySelector('.accordion-button');
           const buttonText = button ? button.textContent.toLowerCase().trim() : '';
           const links = item.querySelectorAll('a');
@@ -391,7 +417,7 @@
             }
           });
 
-          const showByCategory = selectedCategory === '' || categoryId === selectedCategory;
+          const showByCategory = selectedCategory === '' || selectedCategory === itemCategory;
           const shouldShow = match && showByCategory;
 
           if (shouldShow) {
@@ -404,18 +430,9 @@
           }
         });
 
-        // Mostra ou esconde a mensagem de "nenhum resultado"
         noResultsMessage.style.display = resultsFound ? 'none' : 'block';
-
-        // Se a busca estiver vazia, recolher todos
-        if (searchText === '') {
-          accordionItems.forEach(item => {
-            const collapseElement = item.querySelector('.accordion-collapse');
-            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseElement, { toggle: false });
-            bsCollapse.hide();
-          });
-        }
       }
+
 
       searchInput.addEventListener('input', filterContent);
       categorySelect.addEventListener('change', filterContent);
