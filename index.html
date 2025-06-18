@@ -70,6 +70,14 @@
       width: 35%;
     }
 
+    .btn-voltar {
+      font-weight: bold;
+      background-color: #511851;
+      color: #ffffff;
+      font-size: 1.2rem;
+      margin-top: 5vh;
+    }
+
     @media (max-width: 768px) {
 
       .form-control,
@@ -80,6 +88,11 @@
       .logo {
         width: 100%;
       }
+
+      .btn-voltar {
+        position: relative !important;
+        width: 35%;
+      }
     }
   </style>
 </head>
@@ -87,7 +100,16 @@
 <body>
 
   <div class="container">
-    <h1 class="mb-5 text-center"><img class="logo" src="./img/Powerchef.webp" alt=""></h1>
+    <div class="position-relative mb-5">
+      <a href="https://sti3implantacao.github.io/menu/"
+        class="btn btn-outline-light position-absolute top-0 start-0 d-flex align-items-center btn-voltar">
+        <i class="bi bi-arrow-left"></i>
+        <span class="ms-2">Voltar</span>
+      </a>
+      <h1 class="text-center">
+        <img class="logo" src="./img/Powerchef.webp" alt="">
+      </h1>
+    </div>
 
     <!-- Filtros em linha -->
     <div class="row g-2 align-items-center mb-3">
